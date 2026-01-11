@@ -5,6 +5,9 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 import java.util.Map;
 
 @RecordBuilder
-public record CurrencyNameResponse(
-    Map<String, String> currencies
+public record ExternalRateResponse(
+    Double amount,
+    String base,
+    String date,
+    Map<String, Double> rates
 ) { }
