@@ -1,7 +1,9 @@
 package id.co.evan.project.aggregator.service.strategy.impl;
 
 import id.co.evan.project.aggregator.base.UnifiedFinanceResponse;
+import id.co.evan.project.aggregator.config.properties.FinanceProperties;
 import id.co.evan.project.aggregator.service.strategy.IDRDataFetcher;
+import id.co.evan.project.aggregator.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -11,19 +13,23 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Service(Constants.HISTORICAL_IDR_USD)
 @RequiredArgsConstructor
 public class HistoricalIdrStrategy implements IDRDataFetcher {
 
     private final WebClient webClient;
 
+    private final FinanceProperties financeProperties;
+
     @Override
     public Mono<UnifiedFinanceResponse> fetchData() {
+        var hist = financeProperties.resources().historical();
+
         return webClient.get()
             .uri(uriBuilder -> uriBuilder
-                .pathSegment("2024-01-04..2024-01-05")
-                .queryParam("from", "IDR")
-                .queryParam("to", "USD")
+                .pathSegment(hist.range())
+                .queryParam("from", hist.from())
+                .queryParam("to", hist.to())
                 .build()
             )
             .retrieve()
@@ -33,6 +39,6 @@ public class HistoricalIdrStrategy implements IDRDataFetcher {
 
     @Override
     public String getResourceType() {
-        return "historical_idr_usd";
+        return Constants.HISTORICAL_IDR_USD;
     }
 }

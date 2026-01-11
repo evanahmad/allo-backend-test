@@ -7,6 +7,7 @@ import id.co.evan.project.aggregator.util.ErrorCode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,9 @@ public class FinanceController {
         @Pattern(regexp = "^(latest_idr_rates|historical_idr_usd|supported_currencies)$", message = "Resource type tidak dikenal")
         String resourceType
     ) {
+
+        if (!dataStoreService.isReady()) return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build());
+
         return dataStoreService.getData(resourceType)
             .map(ResponseEntity::ok)
             .switchIfEmpty(Mono.error(new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND)));

@@ -29,7 +29,6 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 
 	compileOnly("org.projectlombok:lombok")
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
 
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	annotationProcessor("org.projectlombok:lombok")

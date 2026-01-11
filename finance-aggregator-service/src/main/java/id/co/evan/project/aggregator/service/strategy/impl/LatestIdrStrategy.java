@@ -1,11 +1,13 @@
 package id.co.evan.project.aggregator.service.strategy.impl;
 
 import id.co.evan.project.aggregator.base.UnifiedFinanceResponse;
+import id.co.evan.project.aggregator.config.properties.FinanceProperties;
+import id.co.evan.project.aggregator.config.properties.GithubProperties;
 import id.co.evan.project.aggregator.model.response.ExternalRateResponse;
 import id.co.evan.project.aggregator.service.strategy.IDRDataFetcher;
+import id.co.evan.project.aggregator.util.Constants;
 import id.co.evan.project.aggregator.util.SpreadFactorUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -13,40 +15,51 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Service(Constants.LATEST_IDR_RATES)
 @RequiredArgsConstructor
 public class LatestIdrStrategy implements IDRDataFetcher {
 
     private final WebClient webClient;
     private final SpreadFactorUtil spreadFactorUtil;
 
-    @Value("${github.username}")
-    private String githubUsername;
+    private final FinanceProperties financeProperties;
+    private final GithubProperties githubUsername;
 
     @Override
     public Mono<UnifiedFinanceResponse> fetchData() {
+        String base = financeProperties.resources().latest().base();         // IDR
+        String target = financeProperties.resources().latest().currency();   // USD
+
         return webClient.get()
-            .uri("/latest?base=IDR")
+            .uri(uriBuilder -> uriBuilder
+                .path(Constants.LATEST)
+                .queryParam("base", base)
+                .build()
+            )
             .retrieve()
             .bodyToMono(ExternalRateResponse.class)
-            .map(response -> {
-                double spreadFactor = spreadFactorUtil.calculateSpreadFactor(githubUsername);
-                double rateUsd = response.rates().get("USD");
+            .handle((response, sink) -> {
+                var spreadFactor = spreadFactorUtil.calculateSpreadFactor(githubUsername.username());
+                var rateTarget = response.rates().get(target);
+                if (rateTarget == null) {
+                    sink.error(new IllegalStateException("Missing rate for currency: " + target));
+                    return;
+                }
 
-                double buySpread = spreadFactorUtil.calculateBuySpread(rateUsd, spreadFactor);
+                double buySpread = spreadFactorUtil.calculateBuySpread(rateTarget, spreadFactor);
 
                 var detail = Map.of(
-                    "currency", "USD",
-                    "rate", rateUsd,
-                    "USD_BuySpread_IDR", buySpread
+                    Constants.CURRENCY, target,
+                    Constants.RATE, rateTarget,
+                    Constants.USD_BUYSPREAD_IDR, buySpread
                 );
 
-                return new UnifiedFinanceResponse(getResourceType(), List.of(detail));
+                sink.next(new UnifiedFinanceResponse(getResourceType(), List.of(detail)));
             });
     }
 
     @Override
     public String getResourceType() {
-        return "latest_idr_rates";
+        return Constants.LATEST_IDR_RATES;
     }
 }

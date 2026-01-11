@@ -2,6 +2,7 @@ package id.co.evan.project.aggregator.service.strategy.impl;
 
 import id.co.evan.project.aggregator.base.UnifiedFinanceResponse;
 import id.co.evan.project.aggregator.service.strategy.IDRDataFetcher;
+import id.co.evan.project.aggregator.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
-@Service
+@Service(Constants.SUPPORTED_CURRENCIES)
 @RequiredArgsConstructor
 public class SupportedCurrenciesStrategy implements IDRDataFetcher {
     private final WebClient webClient;
@@ -18,19 +19,20 @@ public class SupportedCurrenciesStrategy implements IDRDataFetcher {
     @Override
     public Mono<UnifiedFinanceResponse> fetchData() {
         return webClient.get()
-            .uri("/currencies")
+            .uri(Constants.CURRENCIES)
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
             .map(res -> {
                 var list = res.entrySet().stream()
                     .map(e -> Map.of("code", e.getKey(), "name", e.getValue()))
                     .toList();
+
                 return new UnifiedFinanceResponse(getResourceType(), list);
             });
     }
 
     @Override
     public String getResourceType() {
-        return "supported_currencies";
+        return Constants.SUPPORTED_CURRENCIES;
     }
 }

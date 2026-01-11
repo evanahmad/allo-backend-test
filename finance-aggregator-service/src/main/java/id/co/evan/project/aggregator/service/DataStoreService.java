@@ -4,24 +4,37 @@ import id.co.evan.project.aggregator.base.UnifiedFinanceResponse;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class DataStoreService {
-    private final Map<String, UnifiedFinanceResponse> storage = new ConcurrentHashMap<>();
-    private Map<String, UnifiedFinanceResponse> immutableStorage;
+
+    private final Map<String, UnifiedFinanceResponse> mutableStorage = new ConcurrentHashMap<>();
+    private final AtomicReference<Map<String, UnifiedFinanceResponse>> immutableStorage = new AtomicReference<>(Collections.emptyMap());
+    private final AtomicBoolean sealed = new AtomicBoolean(false);
 
     public void putData(String resourceType, UnifiedFinanceResponse data) {
-        storage.put(resourceType, data);
+        if (sealed.get()) {
+            throw new IllegalStateException("DataStore is sealed. No more writes allowed.");
+        }
+        mutableStorage.put(resourceType, data);
     }
 
     public void finalizeStore() {
-        this.immutableStorage = Map.copyOf(storage);
+        if (sealed.compareAndSet(false, true)) {
+            immutableStorage.set(Map.copyOf(mutableStorage));
+        }
     }
 
     public Mono<UnifiedFinanceResponse> getData(String resourceType) {
-        return Mono.justOrEmpty(immutableStorage)
-            .flatMap(map -> Mono.justOrEmpty(map.get(resourceType)));
+        return Mono.justOrEmpty(immutableStorage.get().get(resourceType));
+    }
+
+    public boolean isReady() {
+        return sealed.get();
     }
 }
