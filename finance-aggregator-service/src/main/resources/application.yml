@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: finance-aggregator-service
+
+api:
+  frankfurter:
+    base-url: https://api.frankfurter.dev/v1
+
+github:
+  username: "evanahmad"
+
+server:
+  port: 8080
