@@ -1,6 +1,5 @@
 package id.co.evan.project.aggregator.model.response;
 
-import id.co.evan.project.aggregator.base.BaseResponse;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 import java.util.Map;
