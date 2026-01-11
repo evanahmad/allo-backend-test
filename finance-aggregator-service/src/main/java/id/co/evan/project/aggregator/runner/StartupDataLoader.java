@@ -1,6 +1,5 @@
 package id.co.evan.project.aggregator.runner;
 
-import id.co.evan.project.aggregator.base.UnifiedFinanceResponse;
 import id.co.evan.project.aggregator.service.DataStoreService;
 import id.co.evan.project.aggregator.service.strategy.IDRDataFetcher;
 import lombok.RequiredArgsConstructor;
