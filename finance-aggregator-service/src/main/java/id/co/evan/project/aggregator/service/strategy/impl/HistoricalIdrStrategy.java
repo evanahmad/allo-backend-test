@@ -21,7 +21,7 @@ public class HistoricalIdrStrategy implements IDRDataFetcher {
     public Mono<UnifiedFinanceResponse> fetchData() {
         return webClient.get()
             .uri(uriBuilder -> uriBuilder
-                .pathSegment("1999-01-04..1999-01-05")
+                .pathSegment("2024-01-04..2024-01-05")
                 .queryParam("from", "IDR")
                 .queryParam("to", "USD")
                 .build()
