@@ -27,8 +27,8 @@ public class LatestIdrStrategy implements IDRDataFetcher {
 
     @Override
     public Mono<UnifiedFinanceResponse> fetchData() {
-        String base = financeProperties.resources().latest().base();         // IDR
-        String target = financeProperties.resources().latest().currency();   // USD
+        var base = financeProperties.resources().latest().base();
+        var target = financeProperties.resources().latest().currency();
 
         return webClient.get()
             .uri(uriBuilder -> uriBuilder
@@ -46,7 +46,7 @@ public class LatestIdrStrategy implements IDRDataFetcher {
                     return;
                 }
 
-                double buySpread = spreadFactorUtil.calculateBuySpread(rateTarget, spreadFactor);
+                var buySpread = spreadFactorUtil.calculateBuySpread(rateTarget, spreadFactor);
 
                 var detail = Map.of(
                     Constants.CURRENCY, target,
