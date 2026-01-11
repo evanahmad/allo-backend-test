@@ -27,9 +27,6 @@ finance:
 github:
   username: "evanahmad"
 
-app:
-  timestamp-format: "yyyy-MM-dd'T'HH:mm:ss.SSXXX"
-
 logging:
   level:
     root: INFO

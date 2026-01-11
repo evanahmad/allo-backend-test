@@ -7,10 +7,6 @@ import java.util.List;
 @UtilityClass
 public class Constants {
 
-    public static final String USD = "USD";
-    public static final String IDR = "IDR";
-    public static final String BASE = "base";
-
     public static final String CURRENCY = "currency";
     public static final String RATE = "rate";
     public static final String USD_BUYSPREAD_IDR = "USD_BuySpread_IDR";
