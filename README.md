@@ -13,12 +13,14 @@ Clone the Repository
   2. ./gradlew bootRun
   3. ./gradlew test
 ```
-
+curl --location 'http://localhost:8080/api/finance/data/historical_idr_usd' \
+--header 'x-api-key: for_internal_test'
 Curl API
 ```
-   1. curl -X GET "http://localhost:8080/api/finance/data/latest_idr_rates" \ -H "x-api-key: for_internal_test"
-   2. curl -X GET "http://localhost:8080/api/finance/data/historical_idr_usd" \-H "x-api-key: for_internal_test"
-   3. curl -X GET "http://localhost:8080/api/finance/data/supported_currencies" \ -H "x-api-key: for_internal_test"
+   curl --location 'http://localhost:8080/api/finance/data/historical_idr_usd' \--header 'x-api-key: for_internal_test'
+   curl --location 'http://localhost:8080/api/finance/data/supported_currencies' \--header 'x-api-key: for_internal_test'
+   curl --location 'http://localhost:8080/api/finance/data/latest_idr_rates' \--header 'x-api-key: for_internal_test'
+
 ```
 
 * **GitHub Username**: evanahmad
@@ -103,7 +105,7 @@ This ensures extensibility and clear separation of responsibilities.
 3. Unified error response format
 
 ### Error Classification & Mapping
-1. **Resource Not Found (409 Conflict)**: Terjadi jika `{resourceType}` yang diminta tidak terdaftar dalam strategi map kami.
+1. **Resource Not Found (409 Conflict)**: Terjadi jika `{resourceType}` yang diminta tidak terdaftar pada pattern.
 2. **Invalid Input (409 Conflict)**: Terjadi jika terdapat pelanggaran kontrak request (Constraint Violation).
 3. **Security/Unauthorized (409 Conflict)**: Jika `x-api-key` salah atau tidak ada, sistem akan menangkapnya melalui `WebFilter` dan mengalihkannya ke format error standar demi keamanan (*obscurity*).
 4. **General/Internal Error (409 Conflict)**: *Fallback* untuk semua error tak terduga (seperti API external down saat startup).
