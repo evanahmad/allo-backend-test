@@ -1,6 +1,32 @@
+# Simple Overview
+## Requirements
+   * Java 17 or Higher
+   * Use Gradle as is in the application provided
+
+### How To run
+Clone the Repository
+```bash
+  git clone <repository-url>
+  cd finance-aggregator-service
+   
+  1. ./gradlew clean build
+  2. ./gradlew bootRun
+  3. ./gradlew test
+```
+
+Curl API
+```
+   1. curl -X GET "http://localhost:8080/api/finance/data/latest_idr_rates" \ -H "x-api-key: for_internal_test"
+   2. curl -X GET "http://localhost:8080/api/finance/data/historical_idr_usd" \-H "x-api-key: for_internal_test"
+   3. curl -X GET "http://localhost:8080/api/finance/data/supported_currencies" \ -H "x-api-key: for_internal_test"
+```
+
+* **GitHub Username**: evanahmad
+* **Calculated Spread Factor**: `0.00933` 
+
 # Finance Aggregator Service
 
-## 1. OVERVIEW
+## 1. DETAIL OVERVIEW
 
     Finance Aggregator Service is a Spring Boot (Java 17, WebFlux) application that aggregates exchange rate data from the Frankfurter API and exposes it through a unified internal API.
 
@@ -75,6 +101,12 @@ This ensures extensibility and clear separation of responsibilities.
 1. Centralized global exception handling via @RestControllerAdvice
 3. Clear HTTP status mapping for different error categories
 3. Unified error response format
+
+### Error Classification & Mapping
+1. **Resource Not Found (409 Conflict)**: Terjadi jika `{resourceType}` yang diminta tidak terdaftar dalam strategi map kami.
+2. **Invalid Input (409 Conflict)**: Terjadi jika terdapat pelanggaran kontrak request (Constraint Violation).
+3. **Security/Unauthorized (409 Conflict)**: Jika `x-api-key` salah atau tidak ada, sistem akan menangkapnya melalui `WebFilter` dan mengalihkannya ke format error standar demi keamanan (*obscurity*).
+4. **General/Internal Error (409 Conflict)**: *Fallback* untuk semua error tak terduga (seperti API external down saat startup).
 
 ## 7. Thread Safety Considerations
 
