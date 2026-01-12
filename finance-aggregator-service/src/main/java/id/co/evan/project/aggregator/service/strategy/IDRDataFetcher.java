@@ -1,6 +1,6 @@
 package id.co.evan.project.aggregator.service.strategy;
 
-import id.co.evan.project.aggregator.base.UnifiedFinanceResponse;
+import id.co.evan.project.aggregator.model.response.UnifiedFinanceResponse;
 import reactor.core.publisher.Mono;
 
 public interface IDRDataFetcher {

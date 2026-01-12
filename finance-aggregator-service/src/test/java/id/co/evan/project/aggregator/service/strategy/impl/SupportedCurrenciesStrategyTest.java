@@ -19,12 +19,17 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class SupportedCurrenciesStrategyTest {
 
-    @Mock private WebClient webClient;
-    @Mock private WebClient.RequestHeadersUriSpec requestHeadersUriSpec;
-    @Mock private WebClient.RequestHeadersSpec requestHeadersSpec;
-    @Mock private WebClient.ResponseSpec responseSpec;
+    @Mock
+    private WebClient webClient;
+    @Mock
+    private WebClient.RequestHeadersUriSpec requestHeadersUriSpec;
+    @Mock
+    private WebClient.RequestHeadersSpec requestHeadersSpec;
+    @Mock
+    private WebClient.ResponseSpec responseSpec;
 
-    @InjectMocks private SupportedCurrenciesStrategy strategy;
+    @InjectMocks
+    private SupportedCurrenciesStrategy strategy;
 
     @Test
     void shouldTransformCurrenciesMapToList() {
@@ -42,10 +47,10 @@ class SupportedCurrenciesStrategyTest {
         StepVerifier.create(strategy.fetchData())
             .assertNext(response -> {
                 assert response.resourceType().equals("supported_currencies");
-                List<Map<String, String>> data = (List<Map<String, String>>) response.data();
+                List<Map<String, Object>> data = response.data();
                 assert data.size() == 2;
 
-                boolean hasIdr = data.stream().anyMatch(m -> m.get("code").equals("IDR"));
+                var hasIdr = data.stream().anyMatch(m -> m.get("code").equals("IDR"));
                 assert hasIdr;
             })
             .verifyComplete();
