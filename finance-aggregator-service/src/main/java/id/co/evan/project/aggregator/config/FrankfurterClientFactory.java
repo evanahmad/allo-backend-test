@@ -44,7 +44,7 @@ public class FrankfurterClientFactory implements FactoryBean<WebClient> {
     }
 
     @Override
-    public Class<?> getObjectType() {
+    public Class<WebClient> getObjectType() {
         return WebClient.class;
     }
 }

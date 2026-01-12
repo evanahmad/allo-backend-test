@@ -2,16 +2,26 @@ package id.co.evan.project.aggregator.util;
 
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @Component
 public class SpreadFactorUtil {
 
-    public double calculateSpreadFactor(String username) {
-        if (username == null || username.isBlank()) return 0.0;
+    public BigDecimal calculateSpreadFactor(String username) {
+        if (username == null || username.isBlank()) return BigDecimal.ZERO.setScale(5, RoundingMode.HALF_UP);
 
-        return (username.toLowerCase().chars().sum() % 1000) / 100000.0;
+        var sumUnicode = username.toLowerCase().chars().sum();
+
+        return BigDecimal.valueOf(sumUnicode % 1000)
+            .divide(BigDecimal.valueOf(100000), 5, RoundingMode.HALF_UP);
     }
 
-    public double calculateBuySpread(double rateUsd, double spreadFactor) {
-        return (1.0 / rateUsd) * (1.0 + spreadFactor);
+    public BigDecimal calculateBuySpread(double rateUsd, BigDecimal spreadFactor) {
+
+        var inverseRate = BigDecimal.ONE.divide(BigDecimal.valueOf(rateUsd), 5, RoundingMode.HALF_UP);
+        var valueOfFactor = BigDecimal.ONE.add(spreadFactor);
+
+        return inverseRate.multiply(valueOfFactor).setScale(5, RoundingMode.HALF_UP);
     }
 }

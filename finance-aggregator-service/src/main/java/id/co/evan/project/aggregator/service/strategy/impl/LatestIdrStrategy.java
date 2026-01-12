@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,11 +49,11 @@ public class LatestIdrStrategy implements IDRDataFetcher {
 
                 var buySpread = spreadFactorUtil.calculateBuySpread(rateTarget, spreadFactor);
 
-                var detail = Map.of(
-                    Constants.CURRENCY, target,
-                    Constants.RATE, rateTarget,
-                    Constants.USD_BUYSPREAD_IDR, buySpread
-                );
+
+                Map<String, Object> detail = new HashMap<>();
+                detail.put(Constants.CURRENCY, target);
+                detail.put(Constants.RATE, rateTarget);
+                detail.put(Constants.USD_BUYSPREAD_IDR, buySpread);
 
                 sink.next(new UnifiedFinanceResponse(getResourceType(), List.of(detail)));
             });

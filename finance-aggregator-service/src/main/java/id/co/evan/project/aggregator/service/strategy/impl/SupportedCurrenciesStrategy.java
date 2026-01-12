@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service(Constants.SUPPORTED_CURRENCIES)
@@ -24,9 +25,12 @@ public class SupportedCurrenciesStrategy implements IDRDataFetcher {
             .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
             .map(res -> {
                 var list = res.entrySet().stream()
-                    .map(e -> Map.of("code", e.getKey(), "name", e.getValue()))
-                    .toList();
-
+                    .map(e -> {
+                        Map<String, Object> m = new HashMap<>();
+                        m.put("code", e.getKey());
+                        m.put("name", e.getValue());
+                        return m;
+                    }).toList();
                 return new UnifiedFinanceResponse(getResourceType(), list);
             });
     }

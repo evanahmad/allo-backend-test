@@ -2,6 +2,10 @@ package id.co.evan.project.aggregator.util;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SpreadFactorUtilTest {
@@ -11,23 +15,25 @@ class SpreadFactorUtilTest {
     @Test
     @DisplayName("Success - Calculate Spread Factor based on username")
     void shouldCalculateCorrectSpreadFactor() {
-        String username = "evanahmad";
-        double expected = 0.00933;
+        var username = "evanahmad";
+        var expected = BigDecimal.valueOf(0.00933);
 
-        double actual = util.calculateSpreadFactor(username);
+        var actual = util.calculateSpreadFactor(username);
 
-        assertEquals(expected, actual, 0.000001);
+        assertEquals(expected, actual);
     }
 
     @Test
     @DisplayName("Success - Calculate Buy Spread")
     void shouldCalculateCorrectBuySpread() {
-        double rateUsd = 0.000063;
-        double spreadFactor = 0.00933;
-        double expected = (1.0 / rateUsd) * (1.0 + spreadFactor);
+        var rateUsd = 0.000063;
+        var spreadFactor = BigDecimal.valueOf(0.00933);
 
-        double actual = util.calculateBuySpread(rateUsd, spreadFactor);
+        var expected = BigDecimal.ONE.divide(BigDecimal.valueOf(rateUsd), 5, RoundingMode.HALF_UP)
+            .multiply(BigDecimal.ONE.add(spreadFactor)).setScale(5, RoundingMode.HALF_UP);
 
-        assertEquals(expected, actual, 0.000001);
+        var actual = util.calculateBuySpread(rateUsd, spreadFactor);
+
+        assertEquals(expected, actual);
     }
 }

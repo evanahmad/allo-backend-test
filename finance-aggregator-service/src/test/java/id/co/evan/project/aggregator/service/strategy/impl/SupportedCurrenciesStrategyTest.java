@@ -47,7 +47,7 @@ class SupportedCurrenciesStrategyTest {
         StepVerifier.create(strategy.fetchData())
             .assertNext(response -> {
                 assert response.resourceType().equals("supported_currencies");
-                List<Map<String, String>> data = (List<Map<String, String>>) response.data();
+                List<Map<String, Object>> data = response.data();
                 assert data.size() == 2;
 
                 var hasIdr = data.stream().anyMatch(m -> m.get("code").equals("IDR"));

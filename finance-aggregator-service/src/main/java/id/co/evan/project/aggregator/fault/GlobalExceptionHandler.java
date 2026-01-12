@@ -17,18 +17,18 @@ import java.time.format.DateTimeFormatter;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneral(ServerWebExchange exchange) {
-        return buildResponse(ErrorCode.GENERAL_ERROR, exchange);
-    }
+    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, ServerWebExchange exchange) {
+        log.error("Exception caught: {} - {}", ex.getClass().getSimpleName(), ex.getMessage());
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(ServerWebExchange exchange) {
-        return buildResponse(ErrorCode.RESOURCE_NOT_FOUND, exchange);
-    }
+        var errorCode = ErrorCode.GENERAL_ERROR;
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(ServerWebExchange exchange) {
-        return buildResponse(ErrorCode.INVALID_INPUT, exchange);
+        if (ex instanceof ResourceNotFoundException) {
+            errorCode = ErrorCode.RESOURCE_NOT_FOUND;
+        } else if (ex instanceof ConstraintViolationException) {
+            errorCode = ErrorCode.INVALID_INPUT;
+        }
+
+        return buildResponse(errorCode, exchange);
     }
 
     private ResponseEntity<ErrorResponse> buildResponse(ErrorCode errorCode, ServerWebExchange exchange) {

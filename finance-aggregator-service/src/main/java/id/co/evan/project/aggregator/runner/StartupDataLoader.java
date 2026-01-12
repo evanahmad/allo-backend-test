@@ -1,6 +1,7 @@
 package id.co.evan.project.aggregator.runner;
 
 import id.co.evan.project.aggregator.config.properties.FinanceProperties;
+import id.co.evan.project.aggregator.fault.GeneralException;
 import id.co.evan.project.aggregator.service.DataStoreService;
 import id.co.evan.project.aggregator.service.strategy.IDRDataFetcher;
 import id.co.evan.project.aggregator.util.Constants;
@@ -34,7 +35,7 @@ public class StartupDataLoader implements ApplicationRunner {
         Flux.fromIterable(Constants.RESOURCE_TYPES)
             .flatMap(resourceType ->
                 Mono.justOrEmpty(strategiesByResourceType.get(resourceType))
-                    .switchIfEmpty(Mono.error(new IllegalStateException("Missing strategy for resourceType=" + resourceType)))
+                    .switchIfEmpty(Mono.error(new GeneralException()))
                     .flatMap(strategy -> strategy.fetchData()
                         .retryWhen(Retry.fixedDelay(retryCount, retryDelay))
                         .doOnError(e -> log.error("Fetching Failed {}: {}", resourceType, e.getMessage()))
