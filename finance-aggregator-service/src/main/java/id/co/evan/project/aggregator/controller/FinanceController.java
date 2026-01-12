@@ -1,6 +1,6 @@
 package id.co.evan.project.aggregator.controller;
 
-import id.co.evan.project.aggregator.base.UnifiedFinanceResponse;
+import id.co.evan.project.aggregator.model.response.UnifiedFinanceResponse;
 import id.co.evan.project.aggregator.fault.ResourceNotFoundException;
 import id.co.evan.project.aggregator.service.DataStoreService;
 import id.co.evan.project.aggregator.util.ErrorCode;

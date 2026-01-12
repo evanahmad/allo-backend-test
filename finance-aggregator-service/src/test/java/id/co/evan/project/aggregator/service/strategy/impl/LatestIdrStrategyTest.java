@@ -2,7 +2,9 @@ package id.co.evan.project.aggregator.service.strategy.impl;
 
 import id.co.evan.project.aggregator.config.properties.FinanceProperties;
 import id.co.evan.project.aggregator.config.properties.GithubProperties;
+import id.co.evan.project.aggregator.fault.ResourceNotFoundException;
 import id.co.evan.project.aggregator.util.Constants;
+import id.co.evan.project.aggregator.util.ErrorCode;
 import id.co.evan.project.aggregator.util.SpreadFactorUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -22,17 +24,17 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LatestIdrStrategyTest {
-
 
     @Test
     @DisplayName("Missing rate for currency")
     void fetchData_Failed() {
         var strategy = new LatestIdrStrategy(
             stubWebClient("""
-                {"amount":1.0,"base":"IDR","date":"2024-01-05","rates":{"EUR":0.000058}}
-            """),
+            {"amount":1.0,"base":"IDR","date":"2024-01-05","rates":{}}
+        """),
             new SpreadFactorUtil(),
             defaultFinanceProps(),
             new GithubProperties("evanahmad")
@@ -40,9 +42,8 @@ class LatestIdrStrategyTest {
 
         StepVerifier.create(strategy.fetchData())
             .expectErrorSatisfies(ex -> {
-                Assertions.assertInstanceOf(IllegalStateException.class, ex);
-                org.junit.jupiter.api.Assertions.assertTrue(ex.getMessage().contains("Missing rate"));
-                org.junit.jupiter.api.Assertions.assertTrue(ex.getMessage().contains("USD"));
+                Assertions.assertInstanceOf(ResourceNotFoundException.class, ex);
+                assertTrue(ex.getMessage().contains(ErrorCode.RESOURCE_NOT_FOUND.getDefaultMessage()));
             })
             .verify();
     }
@@ -63,8 +64,7 @@ class LatestIdrStrategyTest {
                 assertEquals(Constants.LATEST_IDR_RATES, res.resourceType());
                 assertFalse(res.data().isEmpty());
 
-                @SuppressWarnings("unchecked")
-                Map<String, Object> d = (Map<String, Object>) res.data().get(0);
+                Map<String, Object> d = res.data().get(0);
 
                 assertEquals("USD", d.get("currency"));
                 assertNotNull(d.get("rate"));

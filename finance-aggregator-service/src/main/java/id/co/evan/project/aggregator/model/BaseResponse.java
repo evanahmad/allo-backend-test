@@ -1,4 +1,4 @@
-package id.co.evan.project.aggregator.base;
+package id.co.evan.project.aggregator.model;
 
 import java.io.Serializable;
 

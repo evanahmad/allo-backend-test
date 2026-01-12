@@ -1,6 +1,6 @@
 package id.co.evan.project.aggregator.service.strategy.impl;
 
-import id.co.evan.project.aggregator.base.UnifiedFinanceResponse;
+import id.co.evan.project.aggregator.model.response.UnifiedFinanceResponse;
 import id.co.evan.project.aggregator.config.properties.FinanceProperties;
 import id.co.evan.project.aggregator.service.strategy.IDRDataFetcher;
 import id.co.evan.project.aggregator.util.Constants;
@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ public class HistoricalIdrStrategy implements IDRDataFetcher {
     @Override
     public Mono<UnifiedFinanceResponse> fetchData() {
         var hist = financeProperties.resources().historical();
+        var now = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSXXX"));
 
         return webClient.get()
             .uri(uriBuilder -> uriBuilder
@@ -34,7 +37,7 @@ public class HistoricalIdrStrategy implements IDRDataFetcher {
             )
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
-            .map(res -> new UnifiedFinanceResponse(getResourceType(), List.of(res)));
+            .map(res -> new UnifiedFinanceResponse(getResourceType(), now, List.of(res)));
     }
 
     @Override

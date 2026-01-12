@@ -1,6 +1,6 @@
 package id.co.evan.project.aggregator.service.strategy.impl;
 
-import id.co.evan.project.aggregator.base.UnifiedFinanceResponse;
+import id.co.evan.project.aggregator.model.response.UnifiedFinanceResponse;
 import id.co.evan.project.aggregator.service.strategy.IDRDataFetcher;
 import id.co.evan.project.aggregator.util.Constants;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +21,8 @@ public class SupportedCurrenciesStrategy implements IDRDataFetcher {
 
     @Override
     public Mono<UnifiedFinanceResponse> fetchData() {
+        var now = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSXXX"));
+
         return webClient.get()
             .uri(Constants.CURRENCIES)
             .retrieve()
@@ -31,7 +35,7 @@ public class SupportedCurrenciesStrategy implements IDRDataFetcher {
                         m.put("name", e.getValue());
                         return m;
                     }).toList();
-                return new UnifiedFinanceResponse(getResourceType(), list);
+                return new UnifiedFinanceResponse(getResourceType(), now, list);
             });
     }
 

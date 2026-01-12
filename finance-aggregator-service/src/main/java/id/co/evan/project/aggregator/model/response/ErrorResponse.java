@@ -1,6 +1,6 @@
 package id.co.evan.project.aggregator.model.response;
 
-import id.co.evan.project.aggregator.base.BaseResponse;
+import id.co.evan.project.aggregator.model.BaseResponse;
 
 public record ErrorResponse(
     String errorCode,

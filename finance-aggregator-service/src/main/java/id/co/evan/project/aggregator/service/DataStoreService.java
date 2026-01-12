@@ -1,6 +1,6 @@
 package id.co.evan.project.aggregator.service;
 
-import id.co.evan.project.aggregator.base.UnifiedFinanceResponse;
+import id.co.evan.project.aggregator.model.response.UnifiedFinanceResponse;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

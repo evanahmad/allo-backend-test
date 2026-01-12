@@ -1,6 +1,6 @@
 package id.co.evan.project.aggregator.service;
 
-import id.co.evan.project.aggregator.base.UnifiedFinanceResponseBuilder;
+import id.co.evan.project.aggregator.model.response.UnifiedFinanceResponseBuilder;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
