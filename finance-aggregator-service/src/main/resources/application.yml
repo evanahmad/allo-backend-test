@@ -10,6 +10,8 @@ api:
     base-url: https://api.frankfurter.dev/v1
     connect-timeout-ms: 3000
     response-timeout-ms: 5000
+  security:
+    api-key: "for_internal_test"
 
 finance:
   retry:
